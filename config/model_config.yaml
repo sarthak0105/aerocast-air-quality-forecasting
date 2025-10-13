@@ -1,0 +1,106 @@
+# Air Quality Forecasting Model Configuration
+
+# Data Configuration
+data:
+  sequence_length: 24  # Hours of historical data to use
+  forecast_horizon: 1  # Hours to forecast ahead
+  train_ratio: 0.7
+  val_ratio: 0.15
+  test_ratio: 0.15
+  
+  # Target variables (what we want to predict)
+  targets:
+    - O3_forecast
+    - NO2_forecast
+  
+  # Feature groups
+  meteorological_features:
+    - T_forecast
+    - q_forecast
+    - u_forecast
+    - v_forecast
+    - w_forecast
+  
+  satellite_features:
+    - NO2_satellite
+    - HCHO_satellite
+    - ratio_satellite
+  
+  temporal_features:
+    - year
+    - month
+    - day
+    - hour
+    - day_of_week
+    - season
+    - is_weekend
+    - is_holiday
+
+# Model Configurations
+models:
+  lstm:
+    model_params:
+      lstm_units: 64
+      num_layers: 2
+      dropout_rate: 0.2
+      learning_rate: 0.001
+    
+    training_params:
+      epochs: 100
+      batch_size: 32
+      patience: 15
+      
+  lstm_large:
+    model_params:
+      lstm_units: 128
+      num_layers: 3
+      dropout_rate: 0.3
+      learning_rate: 0.0005
+    
+    training_params:
+      epochs: 150
+      batch_size: 64
+      patience: 20
+
+# Hyperparameter Search
+hyperparameter_search:
+  n_trials: 50
+  
+  param_grids:
+    lstm:
+      lstm_units: [32, 64, 128, 256]
+      num_layers: [1, 2, 3, 4]
+      dropout_rate: [0.1, 0.2, 0.3, 0.4]
+      learning_rate: [0.0001, 0.0005, 0.001, 0.005]
+
+# Evaluation
+evaluation:
+  metrics:
+    - rmse
+    - mae
+    - mape
+    - r2
+    - bias
+    - correlation
+  
+  plots:
+    - scatter
+    - timeseries
+    - residuals
+    - error_by_level
+
+# MLflow Configuration
+mlflow:
+  experiment_name: "air_quality_forecasting"
+  tracking_uri: "http://localhost:5000"
+  
+# Deployment
+deployment:
+  model_registry_name: "air_quality_model"
+  staging_threshold:
+    rmse: 15.0  # μg/m³
+    r2: 0.7
+  
+  production_threshold:
+    rmse: 12.0  # μg/m³
+    r2: 0.8

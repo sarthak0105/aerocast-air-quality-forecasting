@@ -1,0 +1,122 @@
+air-quality-forecasting/
+├── README.md
+├── requirements.txt
+├── docker-compose.yml
+├── Dockerfile
+├── .env.example
+├── .gitignore
+├── setup.py
+│
+├── config/
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── database.py
+│   └── api_keys.py
+│
+├── data/
+│   ├── raw/
+│   │   ├── satellite/
+│   │   ├── meteorological/
+│   │   └── ground_truth/
+│   ├── processed/
+│   └── external/
+│
+├── src/
+│   ├── __init__.py
+│   ├── data_ingestion/
+│   │   ├── __init__.py
+│   │   ├── satellite_data.py
+│   │   ├── meteorological_data.py
+│   │   ├── ground_truth_data.py
+│   │   └── data_validator.py
+│   │
+│   ├── preprocessing/
+│   │   ├── __init__.py
+│   │   ├── spatial_alignment.py
+│   │   ├── temporal_sync.py
+│   │   ├── feature_engineering.py
+│   │   ├── data_harmonization.py
+│   │   └── quality_control.py
+│   │
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── base_model.py
+│   │   ├── lstm_model.py
+│   │   ├── transformer_model.py
+│   │   ├── ensemble_model.py
+│   │   └── traditional_ml.py
+│   │
+│   ├── training/
+│   │   ├── __init__.py
+│   │   ├── trainer.py
+│   │   ├── hyperparameter_tuning.py
+│   │   └── cross_validation.py
+│   │
+│   ├── evaluation/
+│   │   ├── __init__.py
+│   │   ├── metrics.py
+│   │   ├── validation.py
+│   │   └── visualization.py
+│   │
+│   ├── forecasting/
+│   │   ├── __init__.py
+│   │   ├── predictor.py
+│   │   └── post_processing.py
+│   │
+│   └── utils/
+│       ├── __init__.py
+│       ├── logger.py
+│       ├── helpers.py
+│       └── constants.py
+│
+├── api/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── forecast.py
+│   │   ├── data.py
+│   │   └── health.py
+│   └── schemas/
+│       ├── __init__.py
+│       └── models.py
+│
+├── notebooks/
+│   ├── 01_data_exploration.ipynb
+│   ├── 02_preprocessing_analysis.ipynb
+│   ├── 03_model_development.ipynb
+│   ├── 04_evaluation_analysis.ipynb
+│   └── 05_case_study_delhi.ipynb
+│
+├── scripts/
+│   ├── download_data.py
+│   ├── train_model.py
+│   ├── evaluate_model.py
+│   ├── generate_forecast.py
+│   └── deploy.py
+│
+├── tests/
+│   ├── __init__.py
+│   ├── test_data_ingestion.py
+│   ├── test_preprocessing.py
+│   ├── test_models.py
+│   └── test_api.py
+│
+├── airflow/
+│   ├── dags/
+│   │   ├── data_pipeline.py
+│   │   ├── model_training.py
+│   │   └── forecast_generation.py
+│   └── plugins/
+│
+├── frontend/
+│   ├── index.html
+│   ├── css/
+│   ├── js/
+│   └── assets/
+│
+└── docs/
+    ├── api_documentation.md
+    ├── model_documentation.md
+    ├── deployment_guide.md
+    └── user_guide.md
