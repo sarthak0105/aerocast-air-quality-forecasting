@@ -35,11 +35,10 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:3001", 
-        "https://*.vercel.app",
-        "https://delhi-air-quality-frontend.vercel.app",  # Replace with your actual Vercel URL
-        "*"  # Remove this in production and specify exact domains
+        "https://aerocast-air-quality-forecasting.vercel.app",  # Your Vercel URL
+        "https://aerocast-sarthak0105.vercel.app",  # Alternative Vercel URL format
+        "http://localhost:3000",  # Keep for local development
+        "http://localhost:3001"   # Keep for local development
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
