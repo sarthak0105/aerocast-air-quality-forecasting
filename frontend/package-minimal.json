@@ -1,0 +1,29 @@
+{
+  "name": "delhi-air-quality-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "14.2.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "typescript": "^5.0.0",
+    "chart.js": "^4.4.0",
+    "react-chartjs-2": "^5.2.0",
+    "leaflet": "^1.9.4",
+    "axios": "^1.6.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/leaflet": "^1.9.8",
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.31"
+  }
+}

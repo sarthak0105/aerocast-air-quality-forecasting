@@ -5,22 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historical Data - Delhi Air Quality</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -28,233 +21,34 @@
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             overflow: hidden;
-            backdrop-filter: blur(10px);
-            animation: slideUp 0.8s ease-out;
         }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 40px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
         }
-
-        .header h1 {
-            font-size: 3em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .nav-bar {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px 0;
-            text-align: center;
-        }
-
-        .nav-links {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
-
+        .header h1 { font-size: 3em; margin-bottom: 10px; }
+        .nav-bar { background: rgba(255, 255, 255, 0.1); padding: 15px 0; text-align: center; }
+        .nav-links { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
         .nav-links a {
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            font-weight: 500;
+            color: white; text-decoration: none; padding: 10px 20px;
+            border-radius: 25px; transition: all 0.3s ease; font-weight: 500;
         }
-
-        .nav-links a:hover, .nav-links a.active {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .controls {
-            padding: 30px;
-            background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%);
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        .controls-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .control-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #495057;
-            font-size: 0.9em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .control-group input, .control-group select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .control-group input:focus, .control-group select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
+        .nav-links a:hover, .nav-links a.active { background: rgba(255, 255, 255, 0.2); }
+        .controls { padding: 30px; background: #f8f9fa; }
         .btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            color: white; border: none; padding: 15px 30px; border-radius: 25px;
+            cursor: pointer; font-size: 16px; font-weight: 600;
         }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .content {
-            padding: 30px;
-        }
-
-        .chart-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 30px;
-        }
-
-        .chart-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            border-left: 5px solid #667eea;
-        }
-
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .chart-title {
-            font-size: 1.5em;
-            font-weight: 700;
-            color: #495057;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .chart-container {
-            position: relative;
-            height: 400px;
-        }
-
-        .stats-summary {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            border-top: 4px solid #667eea;
-        }
-
-        .stat-value {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            color: #6c757d;
-            font-weight: 500;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 60px 20px;
-            color: #6c757d;
-            font-size: 1.1em;
-        }
-
-        .loading i {
-            font-size: 3em;
-            color: #667eea;
-            margin-bottom: 20px;
-            animation: spin 2s linear infinite;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .footer {
-            background: linear-gradient(135deg, #495057 0%, #343a40 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .footer-links a {
-            color: white;
-            text-decoration: none;
-            opacity: 0.8;
-            transition: opacity 0.3s ease;
-        }
-
-        .footer-links a:hover {
-            opacity: 1;
-        }
-
-        @media (max-width: 768px) {
-            body { padding: 10px; }
-            .header h1 { font-size: 2em; }
-            .controls-grid { grid-template-columns: 1fr; }
-            .stats-summary { grid-template-columns: 1fr 1fr; }
-        }
+        .btn:hover { transform: translateY(-2px); }
+        .content { padding: 30px; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+        .stat-value { font-size: 2em; font-weight: bold; color: #667eea; }
+        .chart-container { height: 400px; margin: 20px 0; background: white; padding: 20px; border-radius: 15px; }
+        .loading { text-align: center; padding: 40px; color: #667eea; }
     </style>
 </head>
 <body>
@@ -265,193 +59,83 @@
             <div class="nav-bar">
                 <div class="nav-links">
                     <a href="/"><i class="fas fa-home"></i> Dashboard</a>
-                    <a href="/static/historical.html" class="active"><i class="fas fa-chart-line"></i> Historical</a>
-                    <a href="/static/analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a>
-                    <a href="/docs"><i class="fas fa-book"></i> API Docs</a>
+                    <a href="/historical" class="active"><i class="fas fa-chart-line"></i> Historical</a>
+                    <a href="/analytics"><i class="fas fa-chart-bar"></i> Analytics</a>
+                    <a href="/settings"><i class="fas fa-cog"></i> Settings</a>
                 </div>
             </div>
         </div>
 
         <div class="controls">
-            <div class="controls-grid">
-                <div class="control-group">
-                    <label for="start-date"><i class="fas fa-calendar-alt"></i> Start Date:</label>
-                    <input type="date" id="start-date">
-                </div>
-                <div class="control-group">
-                    <label for="end-date"><i class="fas fa-calendar-alt"></i> End Date:</label>
-                    <input type="date" id="end-date">
-                </div>
-                <div class="control-group">
-                    <label for="location-select"><i class="fas fa-map-marker-alt"></i> Location:</label>
-                    <select id="location-select">
-                        <option value="28.6315,77.2167">Connaught Place</option>
-                        <option value="28.6129,77.2295">India Gate</option>
-                        <option value="28.5921,77.0460">Dwarka</option>
-                        <option value="28.4595,77.0266">Gurgaon</option>
-                        <option value="28.5355,77.3910">Noida</option>
-                    </select>
-                </div>
-                <div class="control-group">
-                    <label for="pollutant-select"><i class="fas fa-filter"></i> Pollutant:</label>
-                    <select id="pollutant-select">
-                        <option value="both">Both NO2 & O3</option>
-                        <option value="NO2">NO2 Only</option>
-                        <option value="O3">O3 Only</option>
-                    </select>
-                </div>
-            </div>
             <div style="text-align: center;">
-                <button class="btn" onclick="loadHistoricalData()">
+                <button class="btn" onclick="loadData()">
                     <i class="fas fa-search"></i> Load Historical Data
                 </button>
             </div>
         </div>
 
         <div class="content">
-            <div class="stats-summary">
+            <div class="stats">
                 <div class="stat-card">
                     <div class="stat-value" id="avg-no2">--</div>
-                    <div class="stat-label">Avg NO2 (μg/m³)</div>
+                    <div>Avg NO2 (μg/m³)</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value" id="avg-o3">--</div>
-                    <div class="stat-label">Avg O3 (μg/m³)</div>
+                    <div>Avg O3 (μg/m³)</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value" id="max-aqi">--</div>
-                    <div class="stat-label">Max AQI</div>
+                    <div>Max AQI</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value" id="data-points">--</div>
-                    <div class="stat-label">Data Points</div>
+                    <div>Data Points</div>
                 </div>
             </div>
 
-            <div class="chart-grid">
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <div class="chart-title">
-                            <i class="fas fa-chart-area"></i>
-                            Time Series Analysis
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="timeSeriesChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <div class="chart-title">
-                            <i class="fas fa-chart-bar"></i>
-                            Monthly Averages
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="monthlyChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <div class="chart-title">
-                            <i class="fas fa-chart-pie"></i>
-                            Air Quality Distribution
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="distributionChart"></canvas>
-                    </div>
-                </div>
+            <div class="chart-container">
+                <h3>Time Series Analysis</h3>
+                <canvas id="timeChart"></canvas>
             </div>
 
-            <div id="loading-indicator" class="loading" style="display: none;">
-                <i class="fas fa-spinner"></i>
-                <div>Loading historical data...</div>
+            <div class="chart-container">
+                <h3>Monthly Averages</h3>
+                <canvas id="monthChart"></canvas>
             </div>
-        </div>
 
-        <div class="footer">
-            <p>Historical data analysis powered by AI/ML models</p>
-            <div class="footer-links">
-                <a href="/docs"><i class="fas fa-book"></i> API Documentation</a>
-                <a href="/health"><i class="fas fa-heart-pulse"></i> System Health</a>
-                <a href="#"><i class="fas fa-download"></i> Download Data</a>
+            <div class="chart-container">
+                <h3>AQI Distribution</h3>
+                <canvas id="pieChart"></canvas>
+            </div>
+
+            <div id="loading" class="loading" style="display: none;">
+                <i class="fas fa-spinner fa-spin"></i> Loading data...
             </div>
         </div>
     </div>
 
     <script>
-        // Initialize date inputs
-        function initializeDates() {
-            const endDate = new Date();
-            const startDate = new Date();
-            startDate.setDate(startDate.getDate() - 30); // 30 days ago
-            
-            document.getElementById('end-date').value = endDate.toISOString().split('T')[0];
-            document.getElementById('start-date').value = startDate.toISOString().split('T')[0];
-        }
+        let charts = {};
 
-        // Generate dummy historical data
-        function generateHistoricalData(days = 30) {
+        function generateData() {
             const data = [];
             const now = new Date();
             
-            for (let i = days; i >= 0; i--) {
+            for (let i = 30; i >= 0; i--) {
                 const date = new Date(now);
                 date.setDate(date.getDate() - i);
                 
-                // Generate realistic patterns
-                const hour = date.getHours();
-                const dayOfWeek = date.getDay();
+                const no2 = 30 + Math.random() * 40;
+                const o3 = 40 + Math.random() * 30;
+                const aqi = Math.round(Math.max(no2 * 2, o3 * 1.5));
                 
-                // NO2 patterns (higher during rush hours and weekdays)
-                let no2Base = 35;
-                if (hour >= 7 && hour <= 9 || hour >= 17 && hour <= 19) no2Base += 15; // Rush hours
-                if (dayOfWeek >= 1 && dayOfWeek <= 5) no2Base += 10; // Weekdays
-                const no2 = Math.max(0, no2Base + Math.random() * 20 - 10);
-                
-                // O3 patterns (higher during sunny afternoons)
-                let o3Base = 45;
-                if (hour >= 12 && hour <= 16) o3Base += 20; // Afternoon
-                const o3 = Math.max(0, o3Base + Math.random() * 25 - 12.5);
-                
-                data.push({
-                    date: date,
-                    no2: no2,
-                    o3: o3,
-                    aqi: Math.min(Math.round(Math.max(no2 * 2.5, o3 * 1.8)), 500)
-                });
+                data.push({ date, no2, o3, aqi });
             }
-            
             return data;
         }
 
-        // Load and display historical data
-        function loadHistoricalData() {
-            const loadingIndicator = document.getElementById('loading-indicator');
-            loadingIndicator.style.display = 'block';
-            
-            // Simulate API call delay
-            setTimeout(() => {
-                const startDate = new Date(document.getElementById('start-date').value);
-                const endDate = new Date(document.getElementById('end-date').value);
-                const daysDiff = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-                
-                const historicalData = generateHistoricalData(daysDiff);
-                
-                updateStatistics(historicalData);
-                createTimeSeriesChart(historicalData);
-                createMonthlyChart(historicalData);
-                createDistributionChart(historicalData);
-                
-                loadingIndicator.style.display = 'none';
-            }, 1500);
-        }
-
-        // Update statistics
-        function updateStatistics(data) {
+        function updateStats(data) {
             const avgNO2 = data.reduce((sum, d) => sum + d.no2, 0) / data.length;
             const avgO3 = data.reduce((sum, d) => sum + d.o3, 0) / data.length;
             const maxAQI = Math.max(...data.map(d => d.aqi));
@@ -462,199 +146,130 @@
             document.getElementById('data-points').textContent = data.length;
         }
 
-        // Create time series chart
-        function createTimeSeriesChart(data) {
-            const ctx = document.getElementById('timeSeriesChart').getContext('2d');
+        function createTimeChart(data) {
+            const ctx = document.getElementById('timeChart').getContext('2d');
+            if (charts.time) charts.time.destroy();
             
-            // Clear existing chart
-            if (window.timeSeriesChart) {
-                window.timeSeriesChart.destroy();
-            }
-            
-            window.timeSeriesChart = new Chart(ctx, {
+            charts.time = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: data.map(d => d.date.toLocaleDateString()),
-                    datasets: [
-                        {
-                            label: 'NO2 (μg/m³)',
-                            data: data.map(d => d.no2),
-                            borderColor: '#dc3545',
-                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                            borderWidth: 2,
-                            fill: false,
-                            tension: 0.4
-                        },
-                        {
-                            label: 'O3 (μg/m³)',
-                            data: data.map(d => d.o3),
-                            borderColor: '#28a745',
-                            backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                            borderWidth: 2,
-                            fill: false,
-                            tension: 0.4
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Concentration (μg/m³)'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Date'
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Create monthly chart
-        function createMonthlyChart(data) {
-            const ctx = document.getElementById('monthlyChart').getContext('2d');
-            
-            // Group data by month
-            const monthlyData = {};
-            data.forEach(d => {
-                const monthKey = d.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
-                if (!monthlyData[monthKey]) {
-                    monthlyData[monthKey] = { no2: [], o3: [] };
-                }
-                monthlyData[monthKey].no2.push(d.no2);
-                monthlyData[monthKey].o3.push(d.o3);
-            });
-            
-            const months = Object.keys(monthlyData);
-            const avgNO2 = months.map(month => {
-                const values = monthlyData[month].no2;
-                return values.reduce((sum, val) => sum + val, 0) / values.length;
-            });
-            const avgO3 = months.map(month => {
-                const values = monthlyData[month].o3;
-                return values.reduce((sum, val) => sum + val, 0) / values.length;
-            });
-            
-            if (window.monthlyChart) {
-                window.monthlyChart.destroy();
-            }
-            
-            window.monthlyChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: months,
-                    datasets: [
-                        {
-                            label: 'NO2 Average',
-                            data: avgNO2,
-                            backgroundColor: 'rgba(220, 53, 69, 0.7)',
-                            borderColor: '#dc3545',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'O3 Average',
-                            data: avgO3,
-                            backgroundColor: 'rgba(40, 167, 69, 0.7)',
-                            borderColor: '#28a745',
-                            borderWidth: 1
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Average Concentration (μg/m³)'
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Create distribution chart
-        function createDistributionChart(data) {
-            const ctx = document.getElementById('distributionChart').getContext('2d');
-            
-            // Categorize AQI values
-            const categories = {
-                'Good (0-50)': 0,
-                'Moderate (51-100)': 0,
-                'Unhealthy for Sensitive (101-150)': 0,
-                'Unhealthy (151-200)': 0,
-                'Very Unhealthy (201-300)': 0,
-                'Hazardous (301+)': 0
-            };
-            
-            data.forEach(d => {
-                if (d.aqi <= 50) categories['Good (0-50)']++;
-                else if (d.aqi <= 100) categories['Moderate (51-100)']++;
-                else if (d.aqi <= 150) categories['Unhealthy for Sensitive (101-150)']++;
-                else if (d.aqi <= 200) categories['Unhealthy (151-200)']++;
-                else if (d.aqi <= 300) categories['Very Unhealthy (201-300)']++;
-                else categories['Hazardous (301+)']++;
-            });
-            
-            if (window.distributionChart) {
-                window.distributionChart.destroy();
-            }
-            
-            window.distributionChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(categories),
                     datasets: [{
-                        data: Object.values(categories),
-                        backgroundColor: [
-                            '#28a745',
-                            '#ffc107',
-                            '#fd7e14',
-                            '#dc3545',
-                            '#6f42c1',
-                            '#495057'
-                        ],
-                        borderWidth: 2,
-                        borderColor: '#fff'
+                        label: 'NO2',
+                        data: data.map(d => d.no2),
+                        borderColor: '#dc3545',
+                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                        fill: false
+                    }, {
+                        label: 'O3',
+                        data: data.map(d => d.o3),
+                        borderColor: '#28a745',
+                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                        fill: false
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right'
-                        }
-                    }
+                    scales: { y: { beginAtZero: true } }
                 }
             });
         }
 
-        // Initialize page
+        function createMonthChart(data) {
+            const ctx = document.getElementById('monthChart').getContext('2d');
+            if (charts.month) charts.month.destroy();
+            
+            const monthData = {};
+            data.forEach(d => {
+                const month = d.date.toLocaleDateString('en-US', { month: 'short' });
+                if (!monthData[month]) monthData[month] = { no2: [], o3: [] };
+                monthData[month].no2.push(d.no2);
+                monthData[month].o3.push(d.o3);
+            });
+            
+            const months = Object.keys(monthData);
+            const avgNO2 = months.map(m => monthData[m].no2.reduce((a,b) => a+b, 0) / monthData[m].no2.length);
+            const avgO3 = months.map(m => monthData[m].o3.reduce((a,b) => a+b, 0) / monthData[m].o3.length);
+            
+            charts.month = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'NO2 Avg',
+                        data: avgNO2,
+                        backgroundColor: 'rgba(220, 53, 69, 0.7)'
+                    }, {
+                        label: 'O3 Avg',
+                        data: avgO3,
+                        backgroundColor: 'rgba(40, 167, 69, 0.7)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function createPieChart(data) {
+            const ctx = document.getElementById('pieChart').getContext('2d');
+            if (charts.pie) charts.pie.destroy();
+            
+            const categories = { 'Good': 0, 'Moderate': 0, 'Unhealthy': 0, 'Very Unhealthy': 0 };
+            data.forEach(d => {
+                if (d.aqi <= 50) categories['Good']++;
+                else if (d.aqi <= 100) categories['Moderate']++;
+                else if (d.aqi <= 200) categories['Unhealthy']++;
+                else categories['Very Unhealthy']++;
+            });
+            
+            charts.pie = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(categories),
+                    datasets: [{
+                        data: Object.values(categories),
+                        backgroundColor: ['#28a745', '#ffc107', '#dc3545', '#6f42c1']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function loadData() {
+            console.log('Loading historical data...');
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+            
+            setTimeout(() => {
+                try {
+                    const data = generateData();
+                    console.log('Generated data:', data.length, 'points');
+                    
+                    updateStats(data);
+                    createTimeChart(data);
+                    createMonthChart(data);
+                    createPieChart(data);
+                    
+                    loading.style.display = 'none';
+                    console.log('✅ All charts created successfully!');
+                } catch (error) {
+                    console.error('❌ Error:', error);
+                    loading.innerHTML = '<div style="color: red;">Error loading data</div>';
+                }
+            }, 1000);
+        }
+
+        // Auto-load on page load
         window.addEventListener('load', function() {
-            initializeDates();
-            loadHistoricalData();
+            console.log('📊 Historical page loaded');
+            setTimeout(loadData, 500);
         });
     </script>
 </body>

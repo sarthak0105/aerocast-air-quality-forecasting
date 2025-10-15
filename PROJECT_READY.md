@@ -1,4 +1,4 @@
-# 🎉 Delhi Air Quality Forecasting System - READY FOR USE!
+# 🎉 AeroCast - Air Quality Forecasting Platform - READY FOR USE!
 
 ## ✨ **Enhanced Visual Frontend Complete**
 

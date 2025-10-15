@@ -660,10 +660,9 @@
             <div class="nav-bar">
                 <div class="nav-links">
                     <a href="/" class="active"><i class="fas fa-home"></i> Dashboard</a>
-                    <a href="static/historical.html"><i class="fas fa-chart-line"></i> Historical</a>
-                    <a href="static/analytics.html"><i class="fas fa-chart-bar"></i> Analytics</a>
-                    <a href="static/settings.html"><i class="fas fa-cog"></i> Settings</a>
-                    <a href="docs"><i class="fas fa-book"></i> API Docs</a>
+                    <a href="/historical"><i class="fas fa-chart-line"></i> Historical</a>
+                    <a href="/analytics"><i class="fas fa-chart-bar"></i> Analytics</a>
+                    <a href="/settings"><i class="fas fa-cog"></i> Settings</a>
                 </div>
             </div>
         </div>
@@ -765,8 +764,7 @@
         <div class="footer">
             <p>Powered by AI/ML models using satellite data and meteorological analysis</p>
             <div class="footer-links">
-                <a href="docs"><i class="fas fa-book"></i> API Documentation</a>
-                <a href="health"><i class="fas fa-heart-pulse"></i> System Health</a>
+                <a href="/health"><i class="fas fa-heart-pulse"></i> System Health</a>
                 <a href="#"><i class="fas fa-download"></i> Download Data</a>
                 <a href="#"><i class="fas fa-envelope"></i> Contact</a>
             </div>
@@ -926,6 +924,106 @@
             return Math.round(Math.max(no2_aqi, o3_aqi));
         }
 
+        // Health recommendations based on air quality
+        function getHealthRecommendations(aqi, no2, o3) {
+            const recommendations = {
+                safe: [],
+                caution: [],
+                avoid: [],
+                bestTimes: ""
+            };
+            
+            // Determine health groups based on AQI and pollutant levels
+            if (aqi <= 50) {
+                // Good air quality
+                recommendations.safe = [
+                    "Healthy adults and children",
+                    "People with respiratory conditions",
+                    "Elderly individuals",
+                    "Pregnant women",
+                    "Athletes and outdoor workers"
+                ];
+                recommendations.caution = [];
+                recommendations.avoid = [];
+                recommendations.bestTimes = "All day is suitable for outdoor activities";
+            } else if (aqi <= 100) {
+                // Moderate air quality
+                recommendations.safe = [
+                    "Healthy adults",
+                    "Children with normal activity levels"
+                ];
+                recommendations.caution = [
+                    "People with asthma or respiratory conditions",
+                    "Elderly individuals",
+                    "Pregnant women",
+                    "People with heart disease"
+                ];
+                recommendations.avoid = [];
+                recommendations.bestTimes = "Early morning (6-8 AM) and late evening (7-9 PM) are best";
+            } else if (aqi <= 150) {
+                // Unhealthy for sensitive groups
+                recommendations.safe = [
+                    "Healthy adults with limited outdoor exposure"
+                ];
+                recommendations.caution = [
+                    "Healthy children and adults",
+                    "People doing outdoor exercise"
+                ];
+                recommendations.avoid = [
+                    "People with asthma or respiratory conditions",
+                    "Elderly individuals",
+                    "Pregnant women",
+                    "People with heart disease",
+                    "Young children"
+                ];
+                recommendations.bestTimes = "Early morning (5-7 AM) only, avoid midday and evening";
+            } else if (aqi <= 200) {
+                // Unhealthy
+                recommendations.safe = [];
+                recommendations.caution = [
+                    "Healthy adults with minimal outdoor time"
+                ];
+                recommendations.avoid = [
+                    "Everyone should limit outdoor activities",
+                    "People with respiratory conditions",
+                    "Elderly individuals",
+                    "Pregnant women",
+                    "Children",
+                    "People with heart disease"
+                ];
+                recommendations.bestTimes = "Stay indoors, use air purifiers if available";
+            } else {
+                // Very unhealthy or hazardous
+                recommendations.safe = [];
+                recommendations.caution = [];
+                recommendations.avoid = [
+                    "Everyone should avoid outdoor activities",
+                    "Stay indoors with windows closed",
+                    "Use air purifiers",
+                    "Wear N95 masks if must go outside"
+                ];
+                recommendations.bestTimes = "Stay indoors all day, emergency outdoor activities only";
+            }
+            
+            // Special considerations for high NO2 (traffic pollution)
+            if (no2 > 80) {
+                if (!recommendations.avoid.includes("People near busy roads")) {
+                    recommendations.avoid.push("People near busy roads");
+                }
+                recommendations.bestTimes += ". Avoid rush hours (7-9 AM, 5-7 PM)";
+            }
+            
+            // Special considerations for high O3 (photochemical smog)
+            if (o3 > 70) {
+                if (!recommendations.avoid.includes("Outdoor exercise during afternoon")) {
+                    recommendations.avoid.push("Outdoor exercise during afternoon");
+                }
+                recommendations.bestTimes += ". Avoid midday sun (11 AM - 4 PM)";
+            }
+            
+            return recommendations;
+        }
+
         // Enhanced forecast function with faster processing
         async function getForecast() {
             const lat = parseFloat(document.getElementById('latitude').value);
@@ -1018,6 +1116,13 @@
                 `;
             });
             
+            // Calculate health recommendations
+            const no2_avg = data.forecasts.find(f => f.pollutant.includes('NO2'))?.values.reduce((a, b) => a + b, 0) / data.forecasts.find(f => f.pollutant.includes('NO2'))?.values.length || 0;
+            const o3_avg = data.forecasts.find(f => f.pollutant.includes('O3'))?.values.reduce((a, b) => a + b, 0) / data.forecasts.find(f => f.pollutant.includes('O3'))?.values.length || 0;
+            const aqi = calculateAQI(no2_avg, o3_avg);
+            
+            const healthRecommendations = getHealthRecommendations(aqi, no2_avg, o3_avg);
+            
             // Add enhanced summary info with model details
             const modelInfo = data.metadata || {};
             const summaryHtml = `
@@ -1028,6 +1133,34 @@
                     <p><strong>Model:</strong> ${modelInfo.model_version || 'Enhanced LSTM'}</p>
                     <p><strong>Confidence:</strong> <span class="status-indicator status-good"></span>High accuracy</p>
                     <p><strong>Location:</strong> ${data.location.latitude.toFixed(4)}, ${data.location.longitude.toFixed(4)}</p>
+                </div>
+                
+                <div class="info-panel" style="margin-top: 15px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                    <h4><i class="fas fa-user-shield"></i> Health Recommendations</h4>
+                    <div style="margin-top: 15px;">
+                        <div style="margin-bottom: 12px;">
+                            <strong><i class="fas fa-check-circle" style="color: #d4edda;"></i> Safe for:</strong>
+                            <div style="margin-left: 20px; margin-top: 5px;">
+                                ${healthRecommendations.safe.map(group => `• ${group}`).join('<br>')}
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 12px;">
+                            <strong><i class="fas fa-exclamation-triangle" style="color: #fff3cd;"></i> Should be cautious:</strong>
+                            <div style="margin-left: 20px; margin-top: 5px;">
+                                ${healthRecommendations.caution.map(group => `• ${group}`).join('<br>')}
+                            </div>
+                        </div>
+                        <div>
+                            <strong><i class="fas fa-times-circle" style="color: #f8d7da;"></i> Should avoid outdoor activities:</strong>
+                            <div style="margin-left: 20px; margin-top: 5px;">
+                                ${healthRecommendations.avoid.map(group => `• ${group}`).join('<br>')}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2);">
+                        <strong><i class="fas fa-lightbulb"></i> Best times to go out:</strong>
+                        <div style="margin-top: 5px;">${healthRecommendations.bestTimes}</div>
+                    </div>
                 </div>
             `;
             
@@ -1167,6 +1300,22 @@
             document.body.appendChild(particleContainer);
         }
 
+        // Enhanced navigation with loading states
+        function navigateToPage(url, pageName) {
+            // Add loading state to navigation
+            const navLinks = document.querySelectorAll('.nav-links a');
+            navLinks.forEach(link => {
+                if (link.href.includes(url)) {
+                    link.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading...`;
+                }
+            });
+            
+            // Navigate after short delay for visual feedback
+            setTimeout(() => {
+                window.location.href = url;
+            }, 300);
+        }
+
         // Initialize enhanced features
         document.addEventListener('DOMContentLoaded', function() {
             checkModelStatus();
@@ -1183,6 +1332,27 @@
                     setTimeout(() => this.classList.remove('prediction-glow'), 2000);
                 });
             }
+            
+            // Enhanced navigation click handlers
+            const navLinks = document.querySelectorAll('.nav-links a:not(.active)');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const url = this.getAttribute('href');
+                    const pageName = this.textContent.trim();
+                    navigateToPage(url, pageName);
+                });
+            });
+            
+            // Add hover effects to navigation
+            navLinks.forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-3px) scale(1.05)';
+                });
+                link.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(-2px) scale(1)';
+                });
+            });
         });
     </script>
 </body>

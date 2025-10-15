@@ -1,34 +1,40 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
-import { Inter } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
-import "./globals.css"
-import { Suspense } from "react"
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+import { Providers } from './providers'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: "Aero Cast – Smart Air Quality Forecasting",
-  description: "Visualize, forecast, and analyze air quality (NO₂ and O₃) in megacities.",
-  generator: "v0.app",
+  title: 'AeroCast - Delhi Air Quality Forecast',
+  description: 'AI-powered real-time air quality predictions for Delhi NCR region',
+  keywords: 'air quality, Delhi, forecast, pollution, NO2, O3, AQI, AeroCast',
+  authors: [{ name: 'AeroCast Team' }],
+  viewport: 'width=device-width, initial-scale=1',
 }
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-})
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
+}) {
   return (
-    <html lang="en">
-      <body className={`font-sans ${inter.variable} ${GeistSans.variable} ${GeistMono.variable}`}>
-        <Suspense fallback={null}>{children}</Suspense>
-        <Analytics />
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+        <link 
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" 
+          rel="stylesheet" 
+        />
+        <link 
+          rel="stylesheet" 
+          href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" 
+        />
+      </head>
+      <body className={inter.className} suppressHydrationWarning>
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   )

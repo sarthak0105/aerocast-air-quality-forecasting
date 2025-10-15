@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: delhi-air-quality-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.18
+      - key: PORT
+        value: 10000
+    healthCheckPath: /health

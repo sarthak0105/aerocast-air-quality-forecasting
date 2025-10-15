@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     """Application settings"""
     
     # Application
-    APP_NAME: str = "Air Quality Forecasting System"
+    APP_NAME: str = "AeroCast - Air Quality Forecasting Platform"
     VERSION: str = "1.0.0"
     DEBUG: bool = False
     

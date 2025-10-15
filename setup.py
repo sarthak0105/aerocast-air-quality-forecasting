@@ -10,11 +10,11 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
     requirements = [line.strip() for line in fh if line.strip() and not line.startswith("#")]
 
 setup(
-    name="air-quality-forecasting",
+    name="aerocast",
     version="1.0.0",
-    author="Your Name",
-    author_email="your.email@example.com",
-    description="AI/ML-based air quality forecasting system for Delhi NCR",
+    author="AeroCast Team",
+    author_email="team@aerocast.com",
+    description="AeroCast - Advanced AI/ML-based air quality forecasting platform for Delhi NCR",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/yourusername/air-quality-forecasting",

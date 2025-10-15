@@ -1,6 +1,6 @@
-# Air Quality Forecasting System
+# AeroCast - Air Quality Forecasting Platform
 
-AI/ML-based system for short-term forecasting (24-48 hours) of surface O3 and NO2 concentrations in Delhi using satellite data and meteorological reanalysis.
+Advanced AI/ML-based system for short-term forecasting (24-48 hours) of surface O3 and NO2 concentrations in Delhi using satellite data and meteorological reanalysis.
 
 ## Features
 
